@@ -24,5 +24,7 @@ int main(int argc, char *argv[])
 		freq_str = freq_str.substr(0, pos);
 		freq = stoi(freq_str);
 	}
+	cout << "Frequency of queries: " << freq << "ms" << endl;
+	DNSQuery dns("domains.in");
 	return 0;
 }
