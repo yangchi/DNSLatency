@@ -26,5 +26,10 @@ int main(int argc, char *argv[])
 	}
 	cout << "Frequency of queries: " << freq << "ms" << endl;
 	DNSQuery dns("domains.in");
+	bool result = dns.Query();
+	if(result)
+		cout << "Suc" << endl;
+	else
+		cout << "Failed" << endl;
 	return 0;
 }
