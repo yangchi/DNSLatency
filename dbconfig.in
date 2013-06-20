@@ -1,0 +1,4 @@
+server:localhost
+username:dnslatency
+db:dnslatency
+password:dnslatencypasswd
