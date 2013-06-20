@@ -37,5 +37,7 @@ int main(int argc, char *argv[])
 	}
 	*/
 	DB db("dbconfig.in");
+	db.Insert("google.com", 123456789);
+	db.Insert("google.com", 9876543210);
 	return 0;
 }
