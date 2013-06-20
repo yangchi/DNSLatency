@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iterator>
 #include <cstdlib>
+#include <ctime>
+#include "sys/time.h"
 
 DNSQuery::DNSQuery()
 {}
@@ -88,8 +90,13 @@ string
 RandomString(const int length)
 {
 	static const string alphanumeric = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	struct timeval curtime;
+	gettimeofday(&curtime, NULL);
+	srand(curtime.tv_usec);
 	string result;
 	for(int i = 0; i < length; i++)
+	{
 		result.push_back(alphanumeric[rand() % (10+26+26)]);
+	}
 	return result;
 }
