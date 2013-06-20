@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdlib>
 #include "dns.h"
+#include "db.h"
 #include "unistd.h"
 
 using namespace std;
@@ -27,11 +28,14 @@ int main(int argc, char *argv[])
 	}
 	cout << "Frequency of queries: " << freq << "ms" << endl;
 	DNSQuery dns("domains.in");
+	/*
 	while(1)
 	{
 		dns.Query();
 		sleep(freq/1000000);
 		usleep(freq%1000000);
 	}
+	*/
+	DB db("dbconfig.in");
 	return 0;
 }
