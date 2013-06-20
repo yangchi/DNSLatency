@@ -7,9 +7,6 @@
 #include <ctime>
 #include "sys/time.h"
 
-DNSQuery::DNSQuery()
-{}
-
 DNSQuery::DNSQuery(const string & config)
 	: m_config(config)
 {
@@ -59,20 +56,25 @@ DNSQuery::Query()
 		ldns_rdf *domain = ldns_dname_new_frm_str(rand_domain.c_str());
 		if(!domain)
 		{
-			cerr << "could not create the domain" << endl;
+			cerr << "\tcould not create the rdf obj" << endl;
 			return false;
 		}
+		struct timespec tspec_start, tspec_end;
+		clock_gettime(CLOCK_MONOTONIC, &tspec_start); //get time before the query
 		pkt = ldns_resolver_query(resolver, domain, LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD);
+		clock_gettime(CLOCK_MONOTONIC, &tspec_end);
+		long elapsed_nanos = 1000000000 * (tspec_end.tv_sec - tspec_start.tv_sec) + tspec_end.tv_nsec - tspec_start.tv_nsec; //DNS query latency
+		cout << "\tTime elapsed: " << elapsed_nanos << " nanoseconds" << endl;
 		ldns_rdf_deep_free(domain);
 		if(!pkt)
 		{
-			cerr << "could not resolve" << endl;
+			cerr << "\tnameserver could not resolve the domain" << endl;
 			return false;
 		}
 		ldns_rr_list *result = ldns_pkt_rr_list_by_type(pkt, LDNS_RR_TYPE_A, LDNS_SECTION_ANSWER);
 		if(!result)
 		{
-			cout << "could not find this domain" << endl;
+			cout << "\tnameserver resolved but could not find this domain" << endl;
 		}
 		else
 		{

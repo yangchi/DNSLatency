@@ -1,5 +1,5 @@
 all: dns.o query.o
-	g++ query.o dns.o -o query -std=c++11 -lldns -g
+	g++ query.o dns.o -o query -std=c++11 -lldns -g -lrt
 query.o: query.cc
 	g++ -std=c++11 -c query.cc -g
 dns.o: dns.cc

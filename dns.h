@@ -8,7 +8,6 @@ string RandomString(const int length);
 
 class DNSQuery{
 public:
-	DNSQuery();
 	DNSQuery(const string & config);
 	~DNSQuery();
 	bool Query();
