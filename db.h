@@ -11,6 +11,14 @@
 
 using namespace std;
 
+/*
+ * Stats struct for:
+ * counts - number of queries
+ * avgs - mean of latencies
+ * devs - std dev of latencies
+ * first - the earliest query
+ * last - the latest query
+ */
 struct StatStruct
 {
 	vector<int> counts;
@@ -24,16 +32,16 @@ class DB{
 public:
 	DB(const string & config);
 	~DB();
-	void Insert(const string & domain, const int64_t latency);
-	StatStruct Stats(const vector<string> & domains) const;
-	void UpdateStats(const string & domain);
-	void UpdateTime(const string & domain);//update the timestamp of both first and latest query
+	void Insert(const string & domain, const int64_t latency); //insert a latency to the latency table
+	StatStruct Stats(const vector<string> & domains) const; //Return stats
+	void UpdateStats(const string & domain); //update count, avg and std dev of a domain
+	void UpdateTime(const string & domain);//update the timestamp of both first (if first) and latest query
 private:
 	void Init(const string & config);
-	void PrintConfig() const;
-	bool EstablishTable();
-	bool EstablishStatsTable();
-	bool EstablishDB(); 
+	void PrintConfig() const; //print database configuration
+	bool EstablishTable(); //create latency table if necessary
+	bool EstablishStatsTable(); //create stats table if necessary
+	bool EstablishDB();  //create database if necessary
 private:
 	string m_server; //mysql server e.g. localhost
 	string m_user; //mysql username

@@ -9,10 +9,15 @@
 #include <ctime>
 #include "sys/time.h"
 
+/*
+ * domainfile - files contains all domains to query
+ * dbconfig - database condig file, to used by DB constructor for m_db
+ */
 DNSQuery::DNSQuery(const string & domainfile, const string & dbconfig)
 	: m_config(domainfile), m_db(dbconfig)
 {
-	Init();
+	InitDomains();
+	PrintDomains();
 }
 
 DNSQuery::~DNSQuery()
@@ -32,14 +37,6 @@ DNSQuery::PrintDomains() const
 	vector<string>::const_iterator iter;
 	for(iter = m_domains.begin(); iter != m_domains.end(); iter++)
 		cout << "\t" << (*iter) << endl;
-}
-
-bool
-DNSQuery::Init()
-{
-	InitDomains();
-	PrintDomains();
-	return true;
 }
 
 bool

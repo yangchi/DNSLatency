@@ -12,6 +12,8 @@ ldns-devel
 
 g++ with C++11 support
 
+The MYSQLPP\_MYSQL\_HEADERS\_BURIED is defined at the beginning of db.h. This is for the common case that 'mysql' and 'mysql++' headers are in separate directories in the include path. Otherwise this should not be defined.
+
 ## DB setup:
 
 The program will read database setup info from dbconfig.in. It will use the username and password provided in that file to connect to MySQL. So for this program to run correctly, either change these information, or craete such user in your MySQl.
@@ -39,3 +41,26 @@ Apparently the mean and standard deviation values of latencies can be calculated
 and this will make the stats table seem unnecessary.
 
 However since the question itself requires the code to "keep track in db stats per domain", I created the stats table.
+
+latency table:
+
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| domains | varchar(20) | NO   |     | NULL    |       |
+| latency | bigint(20)  | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+
+stats table:
+
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| domains | varchar(20) | NO   | PRI | NULL    |       |
+| mean    | double      | YES  |     | 0       |       |
+| dev     | double      | YES  |     | 0       |       |
+| count   | int(11)     | YES  |     | 0       |       |
+| first   | timestamp   | YES  |     | NULL    |       |
+| last    | timestamp   | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+

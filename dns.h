@@ -15,12 +15,11 @@ class DNSQuery{
 public:
 	DNSQuery(const string & domainfile, const string & dbconfig);
 	~DNSQuery();
-	bool Query();
-	void PrintStats() const;
+	bool Query(); //Send DNS query to namsserver
+	void PrintStats() const; //Print stats info
 private:
-	bool Init();
-	void InitDomains();
-	void PrintDomains() const;
+	void InitDomains(); //read domains from config file to m_domains
+	void PrintDomains() const; //Print domains read from config file
 private:
 	string m_config; //domains config filename
 	vector<string> m_domains;
