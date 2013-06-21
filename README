@@ -22,7 +22,7 @@ DB setup:
 
 The program will read database setup info from dbconfig.in. It will use the username and password provided in that file to connect to MySQL. So for this program to run correctly, either change these information, or craete such user in your MySQl.
 
-The default database name is 'dnslatency'. If this database does not exist in your MySQL, it will be created by the program. You can change this name in the dbconfig.in as well. Note that the program will *NOT* create the user for you. So create the user first, or change the user info in the dbconfig.in first. And grant proper privileges to this user. Then the program will be able to create the database.
+The default database name is 'dnslatency'. You can create this database manually in your MySQL. If this database does not exist in your MySQL, it will be created by the program. You can change this name in the dbconfig.in as well. Note that the program will *NOT* create the user for you. So create the user first, or change the user info in the dbconfig.in first. **And grant proper privileges to this user.** Then the program will be able to create the database.
 
 -------
 To run:
