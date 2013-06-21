@@ -104,3 +104,9 @@ RandomString(const int length)
 	}
 	return result;
 }
+
+StatStruct
+DNSQuery::GetStats() const
+{
+	return m_db.Stats(m_domains);
+}

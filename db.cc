@@ -102,7 +102,7 @@ void
 DB::Insert(const string & domain, const int64_t latency)
 {
 	mysqlpp::Connection conn(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
-mysqlpp::Query query = conn.query();
+	mysqlpp::Query query = conn.query();
 	query << "INSERT INTO latency VALUES(\'" << domain << "\', " << latency << ");";
 	cout << "Query: " << query.str() << endl;
 	try{
@@ -110,4 +110,27 @@ mysqlpp::Query query = conn.query();
 	} catch (const mysqlpp::BadQuery & badqr_ex){
 		cerr << "Bad query: " << badqr_ex.what() << endl;
 	}
+}
+
+StatStruct
+DB::Stats(const vector<string> & domains) const
+{
+	StatStruct stats;
+	mysqlpp::Connection conn(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
+	vector<string>::const_iterator iter;
+	for(iter = domains.begin(); iter != domains.end(); iter++)
+	{
+		mysqlpp::Query query = conn.query();
+		query << "SELECT AVG(latency), STDDEV_POP(latency) FROM latency WHERE domains=\'" << (*iter) << "\'";
+		mysqlpp::StoreQueryResult result = query.store();
+		try{
+			stats.avgs.push_back(result[0][0]);
+			stats.devs.push_back(result[0][1]);
+		}
+		catch(const mysqlpp::BadConversion & badconv_ex)
+		{
+			cerr << "Well we catch it now" << endl;
+		}
+	}
+	return stats;
 }

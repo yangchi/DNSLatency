@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 	}
 	cout << "Frequency of queries: " << freq << "ms" << endl;
 	DNSQuery dns("domains.in", "dbconfig.in");
+	/*
 	int loop = 10;
 	while(loop--)
 	{
@@ -36,8 +37,17 @@ int main(int argc, char *argv[])
 		sleep(freq/1000000);
 		usleep(freq%1000000);
 	}
+	*/
 	//DB db("dbconfig.in");
 	//db.Insert("google.com", 123456789);
 	//db.Insert("google.com", 9876543210);
+	StatStruct stats = dns.GetStats();
+	vector<double>::const_iterator iter;
+	cout << "AVGS!!" << endl;
+	for(iter = stats.avgs.begin(); iter != stats.avgs.end(); iter++)
+		cout << (*iter) << endl;
+	cout << "DEVS!!" << endl;
+	for(iter = stats.devs.begin(); iter != stats.devs.end(); iter++)
+		cout << (*iter) << endl;
 	return 0;
 }

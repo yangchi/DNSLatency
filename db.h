@@ -7,14 +7,22 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+struct StatStruct
+{
+	vector<double> avgs;
+	vector<double> devs;
+};
 
 class DB{
 public:
 	DB(const string & config);
 	~DB();
 	void Insert(const string & domain, const int64_t latency);
+	StatStruct Stats(const vector<string> & domains) const;
 private:
 	void Init(const string & config);
 	void PrintConfig() const;
