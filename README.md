@@ -45,22 +45,36 @@ However since the question itself requires the code to "keep track in db stats p
 latency table:
 
 +---------+-------------+------+-----+---------+-------+
+
 | Field   | Type        | Null | Key | Default | Extra |
+
 +---------+-------------+------+-----+---------+-------+
+
 | domains | varchar(20) | NO   |     | NULL    |       |
+
 | latency | bigint(20)  | NO   |     | NULL    |       |
+
 +---------+-------------+------+-----+---------+-------+
 
 stats table:
 
 +---------+-------------+------+-----+---------+-------+
+
 | Field   | Type        | Null | Key | Default | Extra |
+
 +---------+-------------+------+-----+---------+-------+
+
 | domains | varchar(20) | NO   | PRI | NULL    |       |
+
 | mean    | double      | YES  |     | 0       |       |
+
 | dev     | double      | YES  |     | 0       |       |
+
 | count   | int(11)     | YES  |     | 0       |       |
+
 | first   | timestamp   | YES  |     | NULL    |       |
+
 | last    | timestamp   | YES  |     | NULL    |       |
+
 +---------+-------------+------+-----+---------+-------+
 
