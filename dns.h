@@ -16,7 +16,7 @@ public:
 	DNSQuery(const string & domainfile, const string & dbconfig);
 	~DNSQuery();
 	bool Query();
-	StatStruct GetStats() const;
+	void PrintStats() const;
 private:
 	bool Init();
 	void InitDomains();

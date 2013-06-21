@@ -1,6 +1,7 @@
 #include "dns.h"
 #include <cstdint>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <algorithm>
 #include <iterator>
@@ -53,7 +54,7 @@ DNSQuery::Query()
 	for(iter = m_domains.begin(); iter != m_domains.end(); iter++)
 	{
 		string rand_domain = RandomString(7) + "." + (*iter);
-		cout << "Randomized: " << rand_domain << endl;
+		cout << "\tRandomized domain: " << rand_domain << endl;
 		ldns_rdf *domain = ldns_dname_new_frm_str(rand_domain.c_str());
 		if(!domain)
 		{
@@ -62,11 +63,12 @@ DNSQuery::Query()
 		}
 		struct timespec tspec_start, tspec_end;
 		clock_gettime(CLOCK_MONOTONIC, &tspec_start); //get time before the query
-		pkt = ldns_resolver_query(resolver, domain, LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD);
+		pkt = ldns_resolver_query(resolver, domain, LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD); //recursive DNS query
+		m_db.UpdateTime(*iter); //Update timestamps in the stats table in DB
 		clock_gettime(CLOCK_MONOTONIC, &tspec_end);
 		int64_t elapsed_nanos = 1000000000 * (tspec_end.tv_sec - tspec_start.tv_sec) + tspec_end.tv_nsec - tspec_start.tv_nsec; //DNS query latency
 		cout << "\tTime elapsed: " << elapsed_nanos << " nanoseconds" << endl;
-		m_db.Insert(*iter, elapsed_nanos); //store it to the db
+		m_db.Insert(*iter, elapsed_nanos); //store it to the db, update stats (count, mean, std) in stats table in DB
 		ldns_rdf_deep_free(domain);
 		if(!pkt)
 		{
@@ -76,12 +78,12 @@ DNSQuery::Query()
 		ldns_rr_list *result = ldns_pkt_rr_list_by_type(pkt, LDNS_RR_TYPE_A, LDNS_SECTION_ANSWER);
 		if(!result)
 		{
-			cout << "\tnameserver resolved but could not find this domain" << endl;
+			//cout << "\tnameserver resolved but could not find this domain" << endl;
 		}
 		else
 		{
-			ldns_rr_list_sort(result);
-			ldns_rr_list_print(stdout, result);
+			//ldns_rr_list_sort(result);
+			//ldns_rr_list_print(stdout, result);
 			ldns_rr_list_deep_free(result);
 		}
 		ldns_pkt_free(pkt);
@@ -105,8 +107,24 @@ RandomString(const int length)
 	return result;
 }
 
-StatStruct
-DNSQuery::GetStats() const
+void
+DNSQuery::PrintStats() const
 {
-	return m_db.Stats(m_domains);
+	StatStruct stats = m_db.Stats(m_domains);
+	cout << "Stats of our queries: " << endl;
+	cout << setw(15) << "Domain" <<
+		setw(10) << "Count" << 
+		setw(25) << "Mean(nanosec)" << 
+		setw(25) << "Std Dev(nanosec)" << 
+		setw(25) << "FirstQuery" << 
+		setw(25) << "LastQuery" << endl;
+	for(int i = 0; i < m_domains.size(); i++)
+	{
+		cout << setw(15) <<	m_domains[i] << 
+			setw(10) << stats.counts[i] << 
+			setw(25) << stats.avgs[i] <<
+			setw(25) << stats.devs[i] << 
+			setw(25) << stats.first[i] << 
+			setw(25) << stats.last[i] << endl;
+	}
 }
