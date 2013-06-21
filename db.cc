@@ -40,26 +40,38 @@ DB::Init(const string & config)
 	EstablishTable();
 }
 
-void 
+bool
 DB::EstablishDB() 
 {
-	m_conn.connect(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
-	if(!m_conn.connected()) //connection failed, try to create db first
-	{
-		cout << "Connection failed. Try to create db." << endl;
-		m_conn.connect(0, m_server.c_str(), m_user.c_str(), m_passwd.c_str());
-		m_conn.create_db(m_db);
+	try{
+		mysqlpp::Connection conn("information_schema", m_server.c_str(), m_user.c_str(), m_passwd.c_str());
+		cout << "Connected to the information_schema db successfully." << endl;
+		mysqlpp::Query query = conn.query();
+		query << "SELECT * FROM SCHEMATA WHERE SCHEMA_NAME = \'" << m_db.c_str() << "\'";
+		mysqlpp::StoreQueryResult result = query.store();
+		if(!result.size())
+		{
+			conn.create_db(m_db.c_str());
+		}
+		return true;
 	}
-	else
+	catch(const mysqlpp::ConnectionFailed & connfail_ex)
 	{
-		cout << "Connected successfully." << endl;
+		cerr << "Connection to the information_schema db failed." << endl;
+		return false;
+	}
+	catch(const mysqlpp::BadQuery & badqr_ex)
+	{
+		cerr << "Bad Query: " << badqr_ex.what() << endl;
+		return false;
 	}
 }
 
 bool
 DB::EstablishTable() 
 {
-	mysqlpp::Query query = m_conn.query();
+	mysqlpp::Connection conn(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
+	mysqlpp::Query query = conn.query();
 	query << "select 1 from latency"; //check if latency table already exists from previous running
 	try{
 		query.execute();
@@ -87,16 +99,10 @@ DB::PrintConfig() const
 }
 
 void
-DB::DBReconnect()
+DB::Insert(const string & domain, const int64_t latency)
 {
-	m_conn.disconnect();
-	m_conn.connect(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
-}
-void
-DB::Insert(const string & domain, const long latency)
-{
-	DBReconnect();
-	mysqlpp::Query query = m_conn.query();
+	mysqlpp::Connection conn(m_db.c_str(), m_server.c_str(), m_user.c_str(), m_passwd.c_str());
+mysqlpp::Query query = conn.query();
 	query << "INSERT INTO latency VALUES(\'" << domain << "\', " << latency << ");";
 	cout << "Query: " << query.str() << endl;
 	try{

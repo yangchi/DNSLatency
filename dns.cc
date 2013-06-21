@@ -1,4 +1,5 @@
 #include "dns.h"
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -7,8 +8,8 @@
 #include <ctime>
 #include "sys/time.h"
 
-DNSQuery::DNSQuery(const string & config)
-	: m_config(config)
+DNSQuery::DNSQuery(const string & domainfile, const string & dbconfig)
+	: m_config(domainfile), m_db(dbconfig)
 {
 	Init();
 }
@@ -63,8 +64,9 @@ DNSQuery::Query()
 		clock_gettime(CLOCK_MONOTONIC, &tspec_start); //get time before the query
 		pkt = ldns_resolver_query(resolver, domain, LDNS_RR_TYPE_A, LDNS_RR_CLASS_IN, LDNS_RD);
 		clock_gettime(CLOCK_MONOTONIC, &tspec_end);
-		long elapsed_nanos = 1000000000 * (tspec_end.tv_sec - tspec_start.tv_sec) + tspec_end.tv_nsec - tspec_start.tv_nsec; //DNS query latency
+		int64_t elapsed_nanos = 1000000000 * (tspec_end.tv_sec - tspec_start.tv_sec) + tspec_end.tv_nsec - tspec_start.tv_nsec; //DNS query latency
 		cout << "\tTime elapsed: " << elapsed_nanos << " nanoseconds" << endl;
+		m_db.Insert(*iter, elapsed_nanos); //store it to the db
 		ldns_rdf_deep_free(domain);
 		if(!pkt)
 		{
