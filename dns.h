@@ -16,7 +16,6 @@ public:
 	DNSQuery(const string & domainfile, const string & dbconfig);
 	~DNSQuery();
 	bool Query();
-	vector<string> GetDomains() const;
 	StatStruct GetStats() const;
 private:
 	bool Init();
